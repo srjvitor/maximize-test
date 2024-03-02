@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: feed-frontend
+    depends_on:
+      - backend
+    build: ./frontend
+    volumes: 
+      - ./frontend:/app    
+    command: [ "yarn", "serve", "--host=0.0.0.0" ]
+    ports:
+      - 8080:8080
+
+  backend: 
+    container_name: feed-backend
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    command: ["php", "artisan", "serve", "--host=0.0.0.0"]    
+    depends_on:
+      - mysql
+    ports:
+      - 8000:8000
+
+  mysql:
+    container_name: feed-mysql
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      - MYSQL_DATABASE=feed
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - TZ=America/Sao_Paulo
+    volumes:
+      - feed-mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    
+volumes:
+  feed-mysql:
+
